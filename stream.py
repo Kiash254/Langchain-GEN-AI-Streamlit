@@ -1,30 +1,24 @@
 import streamlit as st
-#import google.generativeai as genai
+from decouple import config
+import google.generativeai as genai
+
+API_KEY = config('API_KEY')
 
 with st.sidebar:
-    openai_api_key = st.text_input("Google Gemini System", key="chatbot_api_key", type="password")
-    "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)"
-    "[View the source code](https://github.com/streamlit/llm-examples/blob/main/Chatbot.py)"
-    "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
+    "[View the source code](https://github.com/Kiash254/Langchain-GEN-AI-Streamlit/blob/main/stream.py)"
 
 st.title("Agricultural Recommender System")
-st.subheader(" 🚀 Powered by Google Gemini and Langchain")
-st.caption("🚀 powered by Google Gemini and Langchain")
+st.caption("🚀 Farmers Choice to get the fastest Solution")
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
-
+    st.session_state["messages"] = [{"role": "assistant", "content": "Hello Mkulima 👋 Naeza Kusaidia Ajy(How can i help you) ? "}]
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
 if prompt := st.chat_input():
-    if not openai_api_key:
-        st.info("Please add your OpenAI API key to continue.")
-        st.stop()
-
-    client = OpenAI(api_key=openai_api_key)
+    model = genai.GenerativeModel('gemini-pro', API_KEY)
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
-    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
-    msg = response.choices[0].message.content
+    response = model.generate(prompt, max_tokens=150)  # Replace this line with the correct method to generate chat completions
+    msg = response.choices[0].message.content  # This line might also need to be updated based on the response structure
     st.session_state.messages.append({"role": "assistant", "content": msg})
     st.chat_message("assistant").write(msg)
